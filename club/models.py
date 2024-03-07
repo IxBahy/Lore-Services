@@ -8,7 +8,7 @@ class Club(models.Model):
     img_url = models.CharField(max_length=250, blank=True, null=True)
     current_capacity = models.IntegerField(blank=False, null=False)
     max_capacity = models.IntegerField(blank=False, null=False)
-    owner_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    owner=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     rating = models.FloatField(blank=False,default='0.0' ,null=False)
     class Meta:
         db_table = 'club'
