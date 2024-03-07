@@ -9,7 +9,7 @@ class Club(models.Model):
     current_capacity = models.IntegerField(blank=False, null=False)
     max_capacity = models.IntegerField(blank=False, null=False)
     owner_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
-
+    rating = models.FloatField(blank=False,default='0.0' ,null=False)
     class Meta:
         db_table = 'club'
         verbose_name = 'Club'
@@ -37,6 +37,7 @@ class RoadmapWeek(models.Model):
     title = models.CharField(max_length=250, unique=True,blank=False, null=False)
     description = models.CharField(max_length=500, unique=True,blank=False, null=False)
     roadmap_id=models.ForeignKey(Roadmap, on_delete=models.CASCADE, blank=False, null=False)
+    is_completed = models.BooleanField(blank=False,default=False, null=False)
     class Meta:
         db_table = 'roadmap_week'
         verbose_name = 'RoadmapWeek'
