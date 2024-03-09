@@ -1,7 +1,7 @@
 # from django.shortcuts import render
 from rest_framework import mixins,generics,status,filters
 from rest_framework.response import Response
-from club.serializer import GetClubSerializer,PostClubSerializer
+from club.serializer import *
 from club.models import Club
 from rest_framework.views import APIView
 # ========================================================================
@@ -47,6 +47,17 @@ class ClubsView(mixins.CreateModelMixin,
 
 
 class ClubView(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
+                mixins.UpdateModelMixin,
                   generics.GenericAPIView):
-    pass
+    serializer_class = GetClubDetailsSerializer
+    queryset=Club.objects.all()
+    def get(self, request, *args, **kwargs):
+        try:
+            patient_id = self.kwargs.get("pk")
+            self.queryset = Club.objects.filter(id=patient_id)
+            return self.list(request, *args, **kwargs)
+        except:
+            return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request, *args, **kwargs):
+        self.serializer_class=PostClubSerializer
+        return self.partial_update(request, *args, **kwargs)
