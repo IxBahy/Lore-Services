@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 # ========================================================================
 # ========================   Filter Functions  ===========================
 def filter_clubs(request,queryset):
-    print("hereeeeeeeeeez")
     name=request.query_params.get('name')
     type=request.query_params.get('type')
     rating=request.query_params.get('rating')
@@ -24,6 +23,9 @@ def filter_clubs(request,queryset):
 
 # =====================  End Of Filter Functions  ========================
 # ========================================================================
+
+
+
 
 # Create your views here.
 class ClubsView(mixins.CreateModelMixin,
@@ -53,11 +55,35 @@ class ClubView(mixins.ListModelMixin,
     queryset=Club.objects.all()
     def get(self, request, *args, **kwargs):
         try:
-            patient_id = self.kwargs.get("pk")
-            self.queryset = Club.objects.filter(id=patient_id)
+            club_id = self.kwargs.get("pk")
+            self.queryset = Club.objects.filter(id=club_id)
             return self.list(request, *args, **kwargs)
         except:
             return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
     def patch(self, request, *args, **kwargs):
         self.serializer_class=PostClubSerializer
         return self.partial_update(request, *args, **kwargs)
+
+
+
+
+
+class RoadmapView(mixins.ListModelMixin,
+                mixins.UpdateModelMixin,
+                  generics.GenericAPIView):
+    serializer_class = GetClubDetailsSerializer
+    queryset=Club.objects.all()
+    def get(self, request, *args, **kwargs):
+        try:
+            club_id = self.kwargs.get("pk")
+            self.queryset = Club.objects.filter(id=club_id)
+            return self.list(request, *args, **kwargs)
+        except:
+            return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        self.serializer_class=PostClubSerializer
+        return self.partial_update(request, *args, **kwargs)
+
+
+
+
