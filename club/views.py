@@ -68,15 +68,32 @@ class ClubView(mixins.ListModelMixin,
 
 
 
-class RoadmapView(mixins.ListModelMixin,
+class RoadmapView(mixins.CreateModelMixin,
                 mixins.UpdateModelMixin,
                   generics.GenericAPIView):
-    serializer_class = GetClubDetailsSerializer
-    queryset=Club.objects.all()
+    serializer_class =PostRoadmapSerializer
+    queryset=Roadmap.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+
+
+
+
+class MembersView(mixins.ListModelMixin,
+                mixins.UpdateModelMixin,
+                  generics.GenericAPIView):
+    serializer_class = MembersSerializer
     def get(self, request, *args, **kwargs):
         try:
             club_id = self.kwargs.get("pk")
-            self.queryset = Club.objects.filter(id=club_id)
+            students=User.objects.filter(clubs__id=club_id)
+            self.queryset =students
             return self.list(request, *args, **kwargs)
         except:
             return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
@@ -86,4 +103,17 @@ class RoadmapView(mixins.ListModelMixin,
 
 
 
-
+class ReviewsView(mixins.ListModelMixin,
+                mixins.UpdateModelMixin,
+                  generics.GenericAPIView):
+    serializer_class = ClubReviewSerializer
+    def get(self, request, *args, **kwargs):
+        try:
+            club_id = self.kwargs.get("pk")
+            reviews=ClubReview.objects.filter(club_id=club_id)
+            self.queryset =reviews
+            return self.list(request, *args, **kwargs)
+        except:
+            return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)

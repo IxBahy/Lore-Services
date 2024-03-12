@@ -22,8 +22,8 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('club', include('club.urls')),
-    path('document', include('document.urls')),
-    path('instructor', include('instructor.urls')),
-    path('student', include('student.urls')),
+    path('club/', include('club.urls')),
+    path('document/', include('document.urls')),
+    path('instructor/', include('instructor.urls')),
+    path('student/', include('student.urls')),
 ]

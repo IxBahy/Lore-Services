@@ -44,3 +44,15 @@ class RoadmapWeek(models.Model):
         db_table = 'roadmap_week'
         verbose_name = 'RoadmapWeek'
         verbose_name_plural = 'RoadmapWeeks'
+
+
+
+class ClubReview(models.Model):
+    club_id=models.ForeignKey(Club,related_name="reviews", on_delete=models.CASCADE, blank=False, null=False)
+    user_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    review = models.CharField(max_length=500, unique=True,blank=False, null=False)
+    rating = models.FloatField(blank=False,default='0.0' ,null=False)
+    class Meta:
+        db_table = 'club_review'
+        verbose_name = 'ClubReview'
+        verbose_name_plural = 'ClubReviews'
