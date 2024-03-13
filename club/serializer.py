@@ -11,7 +11,6 @@ from instructor.serializer import InstructorSerializer
 # ========================================================================
 
 class RoadmapWeekSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = RoadmapWeek
         fields = '__all__'
@@ -56,7 +55,7 @@ class GetClubDetailsSerializer(serializers.ModelSerializer):
 class PostClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
-        fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity','owner','rating']
+        fields = ['id', 'name',  'description', 'type', 'img_url', 'current_capacity','max_capacity','owner','rating']
 
 
 class ClubReviewSerializer(serializers.ModelSerializer):
