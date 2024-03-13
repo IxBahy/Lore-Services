@@ -37,10 +37,10 @@ class Roadmap(models.Model):
 class RoadmapWeek(models.Model):
     week_number = models.IntegerField(blank=False, null=False)
     degree =models.IntegerField(blank=False, null=False)
-    title = models.CharField(max_length=250, unique=True,blank=False, null=False)
-    description = models.CharField(max_length=500, unique=True,blank=False, null=False)
+    title = models.CharField(max_length=250, blank=False, null=False)
+    description = models.CharField(max_length=500, blank=False, null=False)
     roadmap_id=models.ForeignKey(Roadmap,related_name="weeks", on_delete=models.CASCADE, blank=False, null=False)
-    is_completed = models.BooleanField(blank=False,default=False, null=False)
+    users_progress = models.ManyToManyField(User, through='UserRoadmapWeek', related_name='weeks_progress')
     class Meta:
         db_table = 'roadmap_week'
         verbose_name = 'RoadmapWeek'
@@ -57,3 +57,15 @@ class ClubReview(models.Model):
         db_table = 'club_review'
         verbose_name = 'ClubReview'
         verbose_name_plural = 'ClubReviews'
+
+
+class UserRoadmapWeek(models.Model):
+
+     user_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+     week_id=models.ForeignKey(RoadmapWeek, on_delete=models.CASCADE, blank=False, null=False)
+     is_completed = models.BooleanField(blank=False,default=False, null=False)
+
+     class Meta:
+        db_table = 'user_roadmap_week'
+        verbose_name = 'UserRoadmapWeek'
+        verbose_name_plural = 'UserRoadmapWeeks'

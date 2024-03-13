@@ -68,17 +68,26 @@ class ClubView(mixins.ListModelMixin,
 
 
 
-class RoadmapView(mixins.CreateModelMixin,
-                mixins.UpdateModelMixin,
-                  generics.GenericAPIView):
-    serializer_class =PostRoadmapSerializer
-    queryset=Roadmap.objects.all()
+class RoadmapView(APIView):
+    def post(self, request,pk):
+        weeks=request.data.get('weeks')
+        roadmap_cap=request.data.get('weeks_capacity')
+        roadmap_current_count=len(weeks)
+        roadmap_data={'weeks_capacity':roadmap_cap,'weeks_count':roadmap_current_count,'club':pk}
+        raodmap_serializer=PostRoadmapSerializer(data=roadmap_data)
 
-    def post(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        if raodmap_serializer.is_valid() :
+            roadmap=raodmap_serializer.save()
+            print(roadmap,"::::::::::::::::::::::")
+            for week in weeks:
+                week['roadmap_id']=roadmap.id
+            weeks_serializer=RoadmapWeekSerializer(data=weeks,many=True)
+            if weeks_serializer.is_valid():
+                weeks_serializer.save()
+                return Response("Roadmap created", status=status.HTTP_201_CREATED)
+            return Response(weeks_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(raodmap_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

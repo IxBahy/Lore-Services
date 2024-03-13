@@ -13,7 +13,7 @@ from instructor.serializer import InstructorSerializer
 class RoadmapWeekSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoadmapWeek
-        fields = '__all__'
+        fields = ['id', 'week_number', 'degree', 'title', 'description',"roadmap_id" ]
 
 
 # Roadmap
@@ -21,13 +21,13 @@ class RoadmapSerializer(serializers.ModelSerializer):
     weeks=RoadmapWeekSerializer( many=True,read_only=True)
     class Meta:
         model = Roadmap
-        fields = '__all__'
+        fields = ['id', 'weeks_count', 'weeks_capacity', 'weeks' ]
 
 
 class PostRoadmapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Roadmap
-        fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity','owner','rating']
+        fields = ['id', 'weeks_capacity','weeks_count','club']
 
 
 # Club members
