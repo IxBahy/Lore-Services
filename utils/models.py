@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-class User(models.Model):
+from django.contrib.auth.models import AbstractUser
+class User(AbstractUser):
     first_name = models.CharField(max_length=250, blank=True, null=True)
     last_name = models.CharField(max_length=250, blank=True, null=True)
-    username = models.CharField(max_length=250, blank=True, null=True)
+    username = models.CharField(max_length=250,unique=True, blank=True, null=True)
     password = models.CharField(max_length=250, blank=True, null=True)
     img_url = models.CharField(max_length=250, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
