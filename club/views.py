@@ -1,5 +1,5 @@
 # from django.shortcuts import render
-from rest_framework import mixins,generics,status,filters
+from rest_framework import mixins,generics,status
 from rest_framework.response import Response
 from club.serializer import *
 from club.models import Club
@@ -55,7 +55,7 @@ class ClubView(mixins.ListModelMixin,
     queryset=Club.objects.all()
     def get(self, request, *args, **kwargs):
         try:
-            club_id = self.kwargs.get("pk")
+            club_id = self.kwargs.get("id")
             self.queryset = Club.objects.filter(id=club_id)
             return self.list(request, *args, **kwargs)
         except:
@@ -69,17 +69,16 @@ class ClubView(mixins.ListModelMixin,
 
 
 class RoadmapView(APIView):
-    def post(self, request,pk):
+    def post(self, request,id):
         weeks=request.data.get('weeks')
         roadmap_cap=request.data.get('weeks_capacity')
         roadmap_current_count=len(weeks)
-        roadmap_data={'weeks_capacity':roadmap_cap,'weeks_count':roadmap_current_count,'club':pk}
+        roadmap_data={'weeks_capacity':roadmap_cap,'weeks_count':roadmap_current_count,'club':id}
         raodmap_serializer=PostRoadmapSerializer(data=roadmap_data)
 
 
         if raodmap_serializer.is_valid() :
             roadmap=raodmap_serializer.save()
-            print(roadmap,"::::::::::::::::::::::")
             for week in weeks:
                 week['roadmap_id']=roadmap.id
             weeks_serializer=RoadmapWeekSerializer(data=weeks,many=True)
@@ -100,7 +99,7 @@ class MembersView(mixins.ListModelMixin,
     serializer_class = MembersSerializer
     def get(self, request, *args, **kwargs):
         try:
-            club_id = self.kwargs.get("pk")
+            club_id = self.kwargs.get("id")
             students=User.objects.filter(clubs__id=club_id)
             self.queryset =students
             return self.list(request, *args, **kwargs)
@@ -118,7 +117,7 @@ class ReviewsView(mixins.ListModelMixin,
     serializer_class = ClubReviewSerializer
     def get(self, request, *args, **kwargs):
         try:
-            club_id = self.kwargs.get("pk")
+            club_id = self.kwargs.get("id")
             reviews=ClubReview.objects.filter(club_id=club_id)
             self.queryset =reviews
             return self.list(request, *args, **kwargs)
