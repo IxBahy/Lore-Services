@@ -67,6 +67,9 @@ class RefreshUserCredentials(TokenRefreshView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = TokenSerializer
+    queryset = User.objects.all()
+
+
 
 
 
@@ -85,8 +88,8 @@ class RegisterView(APIView):
                 else:
                     raise ValueError(message)
             else:
-                print(serializer.errors)
-                raise ValueError('fields dont match serializer')
+                print()
+                raise ValueError(serializer.errors)
 
         except Exception as e :
 
