@@ -1,7 +1,7 @@
 
 from rest_framework import serializers
 from club.models import Club,RoadmapWeek,Roadmap,ClubReview
-from utils.models import User
+from django.conf.global_settings import AUTH_USER_MODEL as User
 from instructor.serializer import InstructorSerializer
 # ========================================================================
 # ===========================  Sub Actions  ==============================

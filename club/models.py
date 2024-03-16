@@ -1,6 +1,5 @@
 from django.db import models
-from utils.models import User
-
+from django.conf import settings
 # Create your models here.
 
 class Club(models.Model):
@@ -11,7 +10,7 @@ class Club(models.Model):
     current_capacity = models.IntegerField(blank=False, null=False)
     max_capacity = models.IntegerField(blank=False, null=False)
     rating = models.FloatField(blank=False,default='0.0' ,null=False)
-    owner=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    owner=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False)
 
 
     class Meta:
@@ -40,7 +39,7 @@ class RoadmapWeek(models.Model):
     title = models.CharField(max_length=250, blank=False, null=False)
     description = models.CharField(max_length=500, blank=False, null=False)
     roadmap_id=models.ForeignKey(Roadmap,related_name="weeks", on_delete=models.CASCADE, blank=False, null=False)
-    users_progress = models.ManyToManyField(User, through='UserRoadmapWeek', related_name='weeks_progress')
+    users_progress = models.ManyToManyField(settings.AUTH_USER_MODEL, through='UserRoadmapWeek', related_name='weeks_progress')
     class Meta:
         db_table = 'roadmap_week'
         verbose_name = 'RoadmapWeek'
@@ -50,7 +49,7 @@ class RoadmapWeek(models.Model):
 
 class ClubReview(models.Model):
     club_id=models.ForeignKey(Club,related_name="reviews", on_delete=models.CASCADE, blank=False, null=False)
-    user_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False)
     review = models.CharField(max_length=500, unique=True,blank=False, null=False)
     rating = models.FloatField(blank=False,default='0.0' ,null=False)
     class Meta:
@@ -61,7 +60,7 @@ class ClubReview(models.Model):
 
 class UserRoadmapWeek(models.Model):
 
-     user_id=models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+     user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False)
      week_id=models.ForeignKey(RoadmapWeek, on_delete=models.CASCADE, blank=False, null=False)
      is_completed = models.BooleanField(blank=False,default=False, null=False)
 

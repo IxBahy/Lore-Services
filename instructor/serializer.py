@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from utils.models import User
+from django.conf.global_settings import AUTH_USER_MODEL as User
 
 
 class InstructorSerializer(serializers.ModelSerializer):

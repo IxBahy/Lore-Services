@@ -16,12 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from rest_framework import routers
-from django.urls import re_path, path, include
+from django.urls import  path, include
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('utils.urls')),
     path('club/', include('club.urls')),
     path('document/', include('document.urls')),
     path('instructor/', include('instructor.urls')),
