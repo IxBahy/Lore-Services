@@ -1,12 +1,5 @@
 from rest_framework import serializers
-from django.conf.global_settings import AUTH_USER_MODEL as User
-from utils.serializer import UserSerializer
+from django.contrib.auth import get_user_model
 
-
-class StudentSerializer(UserSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'first_name', 'last_name','img_url']
-
-
+User = get_user_model()
 

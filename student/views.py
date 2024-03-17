@@ -5,38 +5,113 @@ from rest_framework import mixins,generics,status
 from rest_framework.response import Response
 from student.serializer import *
 from utils.models import  User
-from rest_framework.views import APIView
+from utils.serializer import  UserShortSerializer
+from club.models import UserRoadmapWeek
+# from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated
 
-class StudentsView(mixins.UpdateModelMixin,generics.GenericAPIView):
-    queryset = User.objects.all()
-    serializer_class = StudentSerializer
 
+User=get_user_model()
+
+
+
+class StudentClubsView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        try:
+
+            club_id=request.query_params['club_id']
+            user_id=request.user.id
+            User.objects.get(id=user_id).clubs.add(club_id)
+            return Response("club joined", status=status.HTTP_201_CREATED)
+
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        try:
+            club_id=request.data['club_id']
+            user_id=request.user.id
+            User.objects.get(id=user_id).clubs.remove(club_id)
+            return Response("club left", status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentProgressView(generics.GenericAPIView):
+
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
-      user_id = self.kwargs.get("id")
-      self.queryset=User.objects.get(id=user_id)
-      serializer = self.get_serializer(self.queryset, many=False)
-      print(request.user,request.auth)
-      return Response(serializer.data)
 
-    def patch(self, request, *args, **kwargs):
-        self.serializer_class = StudentSerializer
-        return self.create(request, *args, **kwargs)
+        try:
+            user=request.user
+            clubs=user.clubs.all()
+            res=[]
+            for club in clubs:
+                club_object={"name":club.name,"image":club.img_url,}
+                roadmap=club.roadmap
+                weeks=roadmap.weeks.all()
+                completed_weeks=UserRoadmapWeek.objects.filter(user_id=user.id,week_id__in=weeks,is_completed=True)
+                club_object["progress"]=f'{str(len(completed_weeks))}/{str(len(weeks))}'
+                res.append(club_object)
+            return Response(res, status=status.HTTP_200_OK)
 
-
-
-
-class StudentClubsView(mixins.CreateModelMixin,
-                  generics.GenericAPIView):
-    pass
-
-
-class StudentProgressView():
-    pass
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class StudentCompletedView():
-    pass
+class StudentCompletedWeekView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            club_id=request.query_params['club_id']
+            week_number=request.query_params['week_number']
+            club=user.clubs.get(id=club_id)
+            roadmap=club.roadmap
+            week=roadmap.weeks.get(degree=week_number)
+            UserRoadmapWeek.objects.create(user_id=user,week_id=week,is_completed=True)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            club_id=request.query_params['club_id']
+            week_number=request.query_params['week_number']
+            club=user.clubs.get(id=club_id)
+            roadmap=club.roadmap
+            week=roadmap.weeks.get(degree=week_number)
+            UserRoadmapWeek.objects.filter(user_id=user,week_id=week,is_completed=True).delete()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class StudentFriendsView():
-    pass
+class StudentFriendsView(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            friends=user.friends.all()
+            serializer = UserShortSerializer(friends, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            friend_id=request.query_params['id']
+            friend=User.objects.get(id=friend_id)
+            user.friends.add(friend)
+            return Response(status=status.HTTP_201_CREATED)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            friend_id=request.query_params['id']
+            friend=User.objects.get(id=friend_id)
+            user.friends.remove(friend)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

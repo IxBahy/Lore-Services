@@ -1,7 +1,8 @@
 
 from rest_framework import serializers
-from django.conf.global_settings import AUTH_USER_MODEL as User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class InstructorSerializer(serializers.ModelSerializer):
     class Meta:

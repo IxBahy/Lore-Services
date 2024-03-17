@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializer import TokenSerializer,UserSerializer
+from .serializer import *
 from rest_framework import mixins,generics,status
 from django.contrib.auth import get_user_model
 
@@ -89,3 +89,18 @@ class RegisterView(APIView):
         except Exception as e :
 
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserView(mixins.UpdateModelMixin,generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+      self.queryset=User.objects.get(id=request.user.id)
+      serializer = self.get_serializer(self.queryset, many=False)
+      return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        self.serializer_class = UserProfileSerializer
+        return self.create(request, *args, **kwargs)
+

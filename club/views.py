@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from club.serializer import *
 from club.models import Club
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 # ========================================================================
 # ========================   Filter Functions  ===========================
 def filter_clubs(request,queryset):
@@ -44,22 +45,25 @@ class ClubsView(mixins.CreateModelMixin,
 
 
     def post(self, request, *args, **kwargs):
+        self.permission_classes = [IsAuthenticated]
         self.serializer_class = PostClubSerializer
         return self.create(request, *args, **kwargs)
 
 
-class ClubView(mixins.ListModelMixin,
-                mixins.UpdateModelMixin,
+class ClubView(mixins.UpdateModelMixin,
                   generics.GenericAPIView):
     serializer_class = GetClubDetailsSerializer
+    permission_classes = [IsAuthenticated]
     queryset=Club.objects.all()
     def get(self, request, *args, **kwargs):
         try:
             club_id = self.kwargs.get("id")
-            self.queryset = Club.objects.filter(id=club_id)
-            return self.list(request, *args, **kwargs)
-        except:
-            return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
+            self.queryset= Club.objects.get(id=club_id)
+            serializer = self.get_serializer(self.queryset, many=False)
+            print(serializer.data,":::::::::::::::::::::::::::::")
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     def patch(self, request, *args, **kwargs):
         self.serializer_class=PostClubSerializer
         return self.partial_update(request, *args, **kwargs)
@@ -69,6 +73,7 @@ class ClubView(mixins.ListModelMixin,
 
 
 class RoadmapView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request,id):
         weeks=request.data.get('weeks')
         roadmap_cap=request.data.get('weeks_capacity')
@@ -96,6 +101,7 @@ class RoadmapView(APIView):
 class MembersView(mixins.ListModelMixin,
                 mixins.UpdateModelMixin,
                   generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = MembersSerializer
     def get(self, request, *args, **kwargs):
         try:
@@ -115,6 +121,7 @@ class ReviewsView(mixins.ListModelMixin,
                 mixins.UpdateModelMixin,
                   generics.GenericAPIView):
     serializer_class = ClubReviewSerializer
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         try:
             club_id = self.kwargs.get("id")

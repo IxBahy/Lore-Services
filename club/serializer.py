@@ -1,8 +1,10 @@
 
 from rest_framework import serializers
 from club.models import Club,RoadmapWeek,Roadmap,ClubReview
-from django.conf.global_settings import AUTH_USER_MODEL as User
 from instructor.serializer import InstructorSerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 # ========================================================================
 # ===========================  Sub Actions  ==============================
 
@@ -13,12 +15,12 @@ from instructor.serializer import InstructorSerializer
 class RoadmapWeekSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoadmapWeek
-        fields = ['id', 'week_number', 'degree', 'title', 'description',"roadmap_id" ]
+        fields = ['id', 'degree', 'title', 'description',"roadmap_id" ]
 
 
 # Roadmap
 class RoadmapSerializer(serializers.ModelSerializer):
-    weeks=RoadmapWeekSerializer( many=True,read_only=True)
+    weeks=RoadmapWeekSerializer(many=True,read_only=True)
     class Meta:
         model = Roadmap
         fields = ['id', 'weeks_count', 'weeks_capacity', 'weeks' ]

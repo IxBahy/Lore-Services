@@ -19,8 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id",'username', 'email', 'password', 'first_name', 'last_name',)
-        write_only_fields = ('password',)
-        read_only_fields = ('id',)
+        extra_kwargs = {'password':{'write_only':True,'required':True},"id":{'read_only':True}}
+
 
 
 class TokenSerializer(TokenObtainPairSerializer):
@@ -28,5 +28,18 @@ class TokenSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['username'] = user.username
-        token['email'] = user.email
+        token['type']=user.type
         return token
+
+
+class UserProfileSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = UserSerializer.Meta.fields + ('birth_date', 'phone', 'img_url', 'type', 'clubs', 'chats',"friends",)
+
+
+
+class UserShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "img_url", "type","first_name","last_name",)

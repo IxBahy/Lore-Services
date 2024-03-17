@@ -37,13 +37,12 @@ class User(AbstractUser):
     clubs = models.ManyToManyField('club.Club', related_name='members',related_query_name="member" , blank=True)
     chats = models.ManyToManyField('Chat', related_name='chats', blank=True)
     roles= ArrayField(models.CharField(max_length=200), blank=True,null=True)
-
+    friends=models.ManyToManyField('self',symmetrical=True)
 
     USERNAME_FIELD='username'
     objects = CustomUserManager()
 
-    def __str__(self) -> str:
-        return self.first_name + ' ' + self.last_name
+
     class Meta:
         db_table = 'user'
         verbose_name = 'User'

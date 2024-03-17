@@ -34,7 +34,6 @@ class Roadmap(models.Model):
 
 
 class RoadmapWeek(models.Model):
-    week_number = models.IntegerField(blank=False, null=False)
     degree =models.IntegerField(blank=False, null=False)
     title = models.CharField(max_length=250, blank=False, null=False)
     description = models.CharField(max_length=500, blank=False, null=False)
