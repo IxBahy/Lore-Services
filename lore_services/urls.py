@@ -17,25 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from rest_framework import routers
 from django.urls import  path, include
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-# from rest_framework import permissions
-
-
-schema_view = get_schema_view(
-   openapi.Info(
-      title="Lore APIs",
-      default_version='v1',
-      description="Lore services APIs",
-   ),
-   public=True,
-#    permission_classes=(permissions.AllowAny,),
-)
+from drf_spectacular.views import SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/schema/',include(
+        [
+            path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+            path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+            path('schema/', SpectacularAPIView.as_view(), name='schema'),
+        ]
+
+    )),
     path('admin/', admin.site.urls),
     path('', include('utils.urls')),
     path('club/', include('club.urls')),
