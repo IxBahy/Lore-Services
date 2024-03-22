@@ -10,14 +10,24 @@ from club.models import UserRoadmapWeek
 # from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
 
 
 User=get_user_model()
 
 
 
+@extend_schema(
+        parameters=[
+            OpenApiParameter(name="club_id", description="club id", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+        ]
+
+)
 class StudentClubsView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
+
+
     def post(self, request, *args, **kwargs):
         try:
 
@@ -28,6 +38,8 @@ class StudentClubsView(generics.GenericAPIView):
 
         except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
     def delete(self, request, *args, **kwargs):
         try:
             club_id=request.data['club_id']
@@ -59,7 +71,13 @@ class StudentProgressView(generics.GenericAPIView):
         except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(
+        parameters=[
+            OpenApiParameter(name="club_id", description="club id", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+            OpenApiParameter(name="week_number", description="week number", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+        ]
 
+)
 class StudentCompletedWeekView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -97,6 +115,12 @@ class StudentFriendsView(generics.GenericAPIView):
         except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="id", description="user id that will get a friend request from the current user", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+        ]
+
+)
     def post(self, request, *args, **kwargs):
         try:
             user=request.user
@@ -106,6 +130,12 @@ class StudentFriendsView(generics.GenericAPIView):
             return Response(status=status.HTTP_201_CREATED)
         except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="id", description="user id that will be removed from the current user friends", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+        ]
+
+)
     def delete(self, request, *args, **kwargs):
         try:
             user=request.user

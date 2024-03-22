@@ -24,7 +24,6 @@ def validate_user_data(data):
         '''
         email=data['email']
         username=data['username']
-        # print(data,":::::::::::::::::::::::::::::")
 
         if User.objects.filter(email=email).count()==0 or User.objects.filter(username=username).count() ==0  :
             if is_strong_password(data["password"]):
@@ -83,7 +82,6 @@ class RegisterView(APIView):
                 else:
                     raise ValueError(message)
             else:
-                print()
                 raise ValueError(serializer.errors)
 
         except Exception as e :

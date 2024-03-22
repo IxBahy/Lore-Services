@@ -60,7 +60,6 @@ class ClubView(mixins.UpdateModelMixin,
             club_id = self.kwargs.get("id")
             self.queryset= Club.objects.get(id=club_id)
             serializer = self.get_serializer(self.queryset, many=False)
-            print(serializer.data,":::::::::::::::::::::::::::::")
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -111,10 +110,6 @@ class MembersView(mixins.ListModelMixin,
             return self.list(request, *args, **kwargs)
         except:
             return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
-    def post(self, request, *args, **kwargs):
-        self.serializer_class=PostClubSerializer
-        return self.partial_update(request, *args, **kwargs)
-
 
 
 class ReviewsView(mixins.ListModelMixin,
