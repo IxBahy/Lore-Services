@@ -5,6 +5,10 @@ from club.serializer import *
 from club.models import Club
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
 # ========================================================================
 # ========================   Filter Functions  ===========================
 def filter_clubs(request,queryset):
@@ -34,6 +38,14 @@ class ClubsView(mixins.CreateModelMixin,
     queryset = Club.objects.all()
     serializer_class = GetClubSerializer
     filter_fields = ['name','type','rating','category']
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="name", description="club name", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.STR),
+            OpenApiParameter(name="type", description="club type", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.STR),
+            OpenApiParameter(name="rating", description="club rating", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
+            OpenApiParameter(name="category", description="club category", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.STR),
+        ]
+)
     def get(self, request, *args, **kwargs):
         try:
             queryset = self.filter_queryset(self.get_queryset())
@@ -43,7 +55,9 @@ class ClubsView(mixins.CreateModelMixin,
         except:
             return Response({"error": "Request Error"}, status=status.HTTP_400_BAD_REQUEST)
 
-
+    @extend_schema(
+        request=PostClubSerializer
+    )
     def post(self, request, *args, **kwargs):
         self.permission_classes = [IsAuthenticated]
         self.serializer_class = PostClubSerializer
@@ -63,6 +77,9 @@ class ClubView(mixins.UpdateModelMixin,
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    @extend_schema(
+        request=PostClubSerializer
+    )
     def patch(self, request, *args, **kwargs):
         self.serializer_class=PostClubSerializer
         return self.partial_update(request, *args, **kwargs)

@@ -32,6 +32,11 @@ class TokenSerializer(TokenObtainPairSerializer):
         return token
 
 
+class UserPatchProfileSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = UserSerializer.Meta.fields + ('birth_date', 'phone', 'img_url',)
+
 class UserProfileSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         model = User
