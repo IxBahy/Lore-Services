@@ -12,6 +12,12 @@ User = get_user_model()
 # ========================  End Of Sub Actions ===========================
 # ========================================================================
 
+# THIS SERILIZER IS ONLY HERE SINCE I CANT EXCLUDE A FIELD FROM THE drf_spectacular @extend_schema
+class RoadmapWeekSwaggerSchemaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoadmapWeek
+        fields = ['id', 'degree', 'title', 'description']
+
 class RoadmapWeekSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoadmapWeek

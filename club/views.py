@@ -6,7 +6,7 @@ from club.models import Club
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter,inline_serializer
 from drf_spectacular.types import OpenApiTypes
 
 # ========================================================================
@@ -90,6 +90,17 @@ class ClubView(mixins.UpdateModelMixin,
 
 class RoadmapView(APIView):
     permission_classes = [IsAuthenticated]
+    @extend_schema(
+            request=inline_serializer(
+            name="InlinePostRoadmapSerializer",
+            fields={
+                "weeks": RoadmapWeekSwaggerSchemaSerializer(many=True),
+                "weeks_capacity": serializers.IntegerField(),
+            },
+
+
+        ),
+    )
     def post(self, request,id):
         weeks=request.data.get('weeks')
         roadmap_cap=request.data.get('weeks_capacity')
