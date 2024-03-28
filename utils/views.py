@@ -39,7 +39,7 @@ def is_strong_password(password):
      At least 8 characters long
      Contains at least one lowercase letter, one uppercase letter, one digit, and one special character
     '''
-    pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+    pattern = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
     # Check if the password matches the pattern
     if re.match(pattern, password):
         return True
