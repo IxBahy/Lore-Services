@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from club.serializer import GetClubSerializer
 User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
 
@@ -38,6 +39,8 @@ class UserPatchProfileSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ('birth_date', 'phone', 'img_url',)
 
 class UserProfileSerializer(UserSerializer):
+    clubs=GetClubSerializer(many=True,read_only=True)
+    friends=UserSerializer(many=True,read_only=True)
     class Meta(UserSerializer.Meta):
         model = User
         fields = UserSerializer.Meta.fields + ('birth_date', 'phone', 'img_url', 'type', 'clubs', 'chats',"friends",)
