@@ -42,7 +42,7 @@ class StudentClubsView(generics.GenericAPIView):
 
     def delete(self, request, *args, **kwargs):
         try:
-            club_id=request.data['club_id']
+            club_id=request.query_params['club_id']
             user_id=request.user.id
             User.objects.get(id=user_id).clubs.remove(club_id)
             return Response("club left", status=status.HTTP_200_OK)
