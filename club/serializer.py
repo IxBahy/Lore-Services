@@ -50,7 +50,7 @@ class GetClubSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'description', 'type', 'img_url','owner']
+        fields = ['id', 'name', 'description', 'type', 'img_url','owner',"current_capacity"]
 
 
 # Single club

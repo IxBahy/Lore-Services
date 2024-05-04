@@ -11,7 +11,7 @@ class Club(models.Model):
     max_capacity = models.IntegerField(blank=False, null=False)
     rating = models.FloatField(blank=False,default='0.0' ,null=False)
     owner=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False)
-
+    category = models.CharField(max_length=250, blank=False, null=False ,default='General')
 
     class Meta:
         db_table = 'club'
