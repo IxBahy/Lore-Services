@@ -50,7 +50,7 @@ class GetClubSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'description', 'type', 'img_url','owner',"current_capacity"]
+        fields = ['id', 'name', 'description', 'type', 'img_url','owner',"current_capacity","category","created_at"]
 
 
 # Single club
@@ -59,7 +59,7 @@ class GetClubDetailsSerializer(serializers.ModelSerializer):
     roadmap=RoadmapSerializer()
     class Meta:
         model = Club
-        fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity','owner','rating']
+        fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity',"category",'owner','rating',"created_at"]
 class PostClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
