@@ -4,10 +4,9 @@
 from rest_framework import mixins,generics,status
 from rest_framework.response import Response
 from student.serializer import *
-from utils.models import  User
-from utils.serializer import  UserShortSerializer
+from club.serializer import *
+from utils.serializer import UserShortSerializer
 from club.models import UserRoadmapWeek
-# from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter
@@ -18,13 +17,31 @@ User=get_user_model()
 
 
 
+class StudentClubsView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        try:
+            user=request.user
+            if request.query_params.get('student_id'):
+                user=User.objects.get(id=request.query_params['student_id'])
+            clubs=user.clubs.all()
+            serializer = GetClubSerializer(clubs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 @extend_schema(
         parameters=[
             OpenApiParameter(name="club_id", description="club id", required=True,location=OpenApiParameter.QUERY, type=OpenApiTypes.INT),
         ]
 
 )
-class StudentClubsView(generics.GenericAPIView):
+
+class StudentClubActionsView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
 
@@ -78,6 +95,7 @@ class StudentProgressView(generics.GenericAPIView):
         ]
 
 )
+
 class StudentCompletedWeekView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         try:

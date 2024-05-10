@@ -38,6 +38,7 @@ class ClubsView(mixins.CreateModelMixin,
     queryset = Club.objects.all()
     serializer_class = GetClubSerializer
     filter_fields = ['name','type','rating','category']
+
     @extend_schema(
         parameters=[
             OpenApiParameter(name="name", description="club name", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.STR),
