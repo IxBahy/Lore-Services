@@ -63,7 +63,7 @@ class GetClubDetailsSerializer(serializers.ModelSerializer):
 class PostClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
-        fields = ['id', 'name',  'description', 'type', 'img_url', 'current_capacity','max_capacity','owner','rating']
+        fields = ['id', 'name',  'description', 'type', 'img_url',"category", 'current_capacity','max_capacity','owner','rating']
 
 
 class ClubReviewSerializer(serializers.ModelSerializer):

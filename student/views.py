@@ -121,6 +121,31 @@ class StudentCompletedWeekView(generics.GenericAPIView):
             return Response(status=status.HTTP_200_OK)
         except Exception as e :
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+class StudentProgressWeekView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            club_id=request.query_params['club_id']
+            week_number=request.query_params['week_number']
+            club=user.clubs.get(id=club_id)
+            roadmap=club.roadmap
+            week=roadmap.weeks.get(degree=week_number)
+            UserRoadmapWeek.objects.create(user_id=user,week_id=week,is_in_progress=True)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        try:
+            user=request.user
+            club_id=request.query_params['club_id']
+            week_number=request.query_params['week_number']
+            club=user.clubs.get(id=club_id)
+            roadmap=club.roadmap
+            week=roadmap.weeks.get(degree=week_number)
+            UserRoadmapWeek.objects.filter(user_id=user,week_id=week,is_in_progress=True).delete()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StudentFriendsView(generics.GenericAPIView):

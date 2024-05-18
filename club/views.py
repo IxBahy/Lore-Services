@@ -5,7 +5,7 @@ from club.serializer import *
 from club.models import Club
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter,inline_serializer
 from drf_spectacular.types import OpenApiTypes
 
@@ -131,10 +131,18 @@ class MembersView(mixins.ListModelMixin,
                   generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MembersSerializer
+    @extend_schema(
+            parameters=[
+            OpenApiParameter(name="name", description="member name", required=False,location=OpenApiParameter.QUERY, type=OpenApiTypes.STR),
+        ]
+    )
     def get(self, request, *args, **kwargs):
         try:
             club_id = self.kwargs.get("id")
-            students=User.objects.filter(clubs__id=club_id)
+            name=""
+            if request.query_params.get('name'):
+                name=request.query_params.get('name')
+            students=User.objects.filter(clubs__id=club_id,username__icontains=name)
             self.queryset =students
             return self.list(request, *args, **kwargs)
         except:

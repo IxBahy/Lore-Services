@@ -63,6 +63,7 @@ class UserRoadmapWeek(models.Model):
      user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False)
      week_id=models.ForeignKey(RoadmapWeek, on_delete=models.CASCADE, blank=False, null=False)
      is_completed = models.BooleanField(blank=False,default=False, null=False)
+     is_in_progress = models.BooleanField(blank=False,default=False, null=False)
 
      class Meta:
         db_table = 'user_roadmap_week'
