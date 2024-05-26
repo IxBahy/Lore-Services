@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from club.models import Club,RoadmapWeek,Roadmap,ClubReview
+from club.models import Club,RoadmapWeek,Roadmap,ClubReview,Article
 from instructor.serializer import InstructorSerializer
 from django.contrib.auth import get_user_model
 
@@ -57,10 +57,12 @@ class GetClubSerializer(serializers.ModelSerializer):
 class GetClubDetailsSerializer(serializers.ModelSerializer):
     owner=InstructorSerializer()
     roadmap=RoadmapSerializer()
+    
     class Meta:
         model = Club
         fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity',"category",'owner','rating',"created_at"]
 class PostClubSerializer(serializers.ModelSerializer):
+    # file = FileField()
     class Meta:
         model = Club
         fields = ['id', 'name',  'description', 'type', 'img_url',"category", 'current_capacity','max_capacity','owner','rating']
@@ -69,4 +71,10 @@ class PostClubSerializer(serializers.ModelSerializer):
 class ClubReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClubReview
+        fields = '__all__'
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
         fields = '__all__'

@@ -2,13 +2,14 @@
 from rest_framework import mixins,generics,status
 from rest_framework.response import Response
 from club.serializer import *
-from club.models import Club
+from club.models import Club,Article
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter,inline_serializer
 from drf_spectacular.types import OpenApiTypes
-
+from rest_framework import views
+from rest_framework.parsers import MultiPartParser, FormParser
 # ========================================================================
 # ========================   Filter Functions  ===========================
 def filter_clubs(request,queryset):
@@ -62,9 +63,24 @@ class ClubsView(mixins.CreateModelMixin,
     def post(self, request, *args, **kwargs):
         self.permission_classes = [IsAuthenticated]
         self.serializer_class = PostClubSerializer
-        return self.create(request, *args, **kwargs)
+        res=self.create(request, *args, **kwargs)
+        return res
 
 
+    def put(self,request,**kwargs):
+        self.serializer_class=FileUploadSerializer
+        self.parser_classes = (MultiPartParser, FormParser,)
+        file=request.data["article"]
+        try:
+            if file:
+                serializer=FileUploadSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response("File uploaded",status=status.HTTP_201_CREATED)
+
+
+        except Exception as e :
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
 class ClubView(mixins.UpdateModelMixin,
                   generics.GenericAPIView):
     serializer_class = GetClubDetailsSerializer

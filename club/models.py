@@ -69,3 +69,17 @@ class UserRoadmapWeek(models.Model):
         db_table = 'user_roadmap_week'
         verbose_name = 'UserRoadmapWeek'
         verbose_name_plural = 'UserRoadmapWeeks'
+
+
+class Article(models.Model):
+    article = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    club_id=models.OneToOneField(Club, on_delete=models.CASCADE, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=False, null=False)
+    title = models.CharField(max_length=250, blank=False, null=False)
+    cover_url = models.CharField(max_length=250, blank=True, null=True)
+
+    class Meta:
+        db_table = 'article'
+        verbose_name = 'Article'
+        verbose_name_plural = 'Articles'
