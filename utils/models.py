@@ -34,7 +34,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=250, blank=True, null=True)
     email = models.EmailField(max_length=250, blank=False, null=False, unique=True)
     type = models.CharField(max_length=250, blank=True, null=True)
-    clubs = models.ManyToManyField('club.Club', related_name='members',related_query_name="member" , blank=True)
+    # clubs = models.ManyToManyField('club.Club', related_name='members',related_query_name="member" , blank=True)
     chats = models.ManyToManyField('Chat', related_name='chats', blank=True)
     roles= ArrayField(models.CharField(max_length=200), blank=True,null=True)
     friends=models.ManyToManyField('self',symmetrical=True)
