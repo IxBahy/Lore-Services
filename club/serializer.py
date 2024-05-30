@@ -57,7 +57,7 @@ class GetClubSerializer(serializers.ModelSerializer):
 class GetClubDetailsSerializer(serializers.ModelSerializer):
     owner=InstructorSerializer()
     roadmap=RoadmapSerializer()
-    
+
     class Meta:
         model = Club
         fields = ['id', 'name', 'roadmap', 'description', 'type', 'img_url', 'current_capacity','max_capacity',"category",'owner','rating',"created_at"]

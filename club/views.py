@@ -10,6 +10,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter,inline_seriali
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import views
 from rest_framework.parsers import MultiPartParser, FormParser
+import json
+
 # ========================================================================
 # ========================   Filter Functions  ===========================
 def filter_clubs(request,queryset):
@@ -120,13 +122,14 @@ class RoadmapView(APIView):
     )
     def post(self, request,id):
         weeks=request.data.get('weeks')
-        roadmap_cap=request.data.get('weeks_capacity')
-        roadmap_current_count=len(weeks)
-        roadmap_data={'weeks_capacity':roadmap_cap,'weeks_count':roadmap_current_count,'club':id}
+        roadmap_current_count=request.data.get('weeks_capacity')
+        roadmap_data={'weeks_capacity':4,'weeks_count':roadmap_current_count,'club':id}
         raodmap_serializer=PostRoadmapSerializer(data=roadmap_data)
 
 
         if raodmap_serializer.is_valid() :
+            weeks=json.loads(weeks)
+            weeks=weeks["value"]
             roadmap=raodmap_serializer.save()
             for week in weeks:
                 week['roadmap_id']=roadmap.id
