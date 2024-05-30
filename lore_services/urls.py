@@ -14,27 +14,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from rest_framework import routers
-from django.urls import  path, include
+from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('api/schema/',include(
-        [
-            path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-            path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-            path('schema/', SpectacularAPIView.as_view(), name='schema'),
-        ]
-
-    )),
-    path('admin/', admin.site.urls),
-    path('', include('utils.urls')),
-    path('club/', include('club.urls')),
-    path('document/', include('document.urls')),
-    path('instructor/', include('instructor.urls')),
-    path('student/', include('student.urls')),
+    path(
+        "api/schema/",
+        include(
+            [
+                path(
+                    "swagger-ui/",
+                    SpectacularSwaggerView.as_view(url_name="schema"),
+                    name="swagger-ui",
+                ),
+                path(
+                    "redoc/",
+                    SpectacularRedocView.as_view(url_name="schema"),
+                    name="redoc",
+                ),
+                path("schema/", SpectacularAPIView.as_view(), name="schema"),
+            ]
+        ),
+    ),
+    path("admin/", admin.site.urls),
+    path("", include("utils.urls")),
+    path("club/", include("club.urls")),
+    path("document/", include("document.urls")),
+    path("instructor/", include("instructor.urls")),
+    path("student/", include("student.urls")),
 ]
