@@ -97,14 +97,18 @@ class ClubsView(mixins.CreateModelMixin, generics.GenericAPIView):
             MultiPartParser,
             FormParser,
         )
-        file = request.data["article"]
+        file = request.data["document"]
         try:
             if file:
                 serializer = FileUploadSerializer(data=request.data)
+                print(":::::::::::::::::::::::::::::::::::::", file)
                 if serializer.is_valid():
                     serializer.save()
                     return Response("File uploaded", status=status.HTTP_201_CREATED)
-
+                else:
+                    return Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

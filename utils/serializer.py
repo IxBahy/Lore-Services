@@ -12,7 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         user = User.objects.create(
             username=validated_data["username"],
-            # password=validated_data['password'], if I'll hash the password in the front first
             email=validated_data["email"],
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],

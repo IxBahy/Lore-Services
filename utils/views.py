@@ -59,7 +59,6 @@ def is_strong_password(password):
 
 User = get_user_model()
 
-
 # Create your views here.
 
 
