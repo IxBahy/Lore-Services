@@ -1,5 +1,6 @@
 # Create your views here.
 # from django.shortcuts import render
+import json
 from rest_framework import mixins, generics, status
 from rest_framework.response import Response
 from student.serializer import *
@@ -10,6 +11,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 User = get_user_model()
@@ -95,50 +98,29 @@ class StudentProgressView(generics.GenericAPIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@extend_schema(
-    parameters=[
-        OpenApiParameter(
-            name="club_id",
-            description="club id",
-            required=True,
-            location=OpenApiParameter.QUERY,
-            type=OpenApiTypes.INT,
-        ),
-        OpenApiParameter(
-            name="week_number",
-            description="week number",
-            required=True,
-            location=OpenApiParameter.QUERY,
-            type=OpenApiTypes.INT,
-        ),
-    ]
-)
 class StudentCompletedWeekView(generics.GenericAPIView):
-    def post(self, request, *args, **kwargs):
+    serializer_class = RoadmapWeekSerializer
+
+    def post(self, request, week_id, *args, **kwargs):
         try:
             user = request.user
-            club_id = request.query_params["club_id"]
-            week_number = request.query_params["week_number"]
-            club = user.clubs.get(id=club_id)
-            roadmap = club.roadmap
-            week = roadmap.weeks.get(degree=week_number)
-            UserRoadmapWeek.objects.create(
-                user_id=user, week_id=week, is_completed=True
-            )
+            week = RoadmapWeek.objects.get(id=week_id)
+            week_status = UserRoadmapWeek.objects.filter(user_id=user, week_id=week)[0]
+            if week_status.is_in_progress:
+                week_status.is_completed = True
+                week_status.save()
+            else:
+                raise Exception("Week is not in progress")
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, week_id, *args, **kwargs):
         try:
             user = request.user
-            club_id = request.query_params["club_id"]
-            week_number = request.query_params["week_number"]
-            club = user.clubs.get(id=club_id)
-            roadmap = club.roadmap
-            week = roadmap.weeks.get(degree=week_number)
-            UserRoadmapWeek.objects.filter(
-                user_id=user, week_id=week, is_completed=True
+            week = RoadmapWeek.objects.get(id=week_id)
+            UserRoadmapWeek.objects.create(
+                user_id=user, week_id=week, is_in_progress=True
             ).delete()
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
@@ -146,14 +128,12 @@ class StudentCompletedWeekView(generics.GenericAPIView):
 
 
 class StudentProgressWeekView(generics.GenericAPIView):
-    def post(self, request, *args, **kwargs):
+    serializer_class = RoadmapWeekSerializer
+
+    def post(self, request, week_id, *args, **kwargs):
         try:
             user = request.user
-            club_id = request.query_params["club_id"]
-            week_number = request.query_params["week_number"]
-            club = user.clubs.get(id=club_id)
-            roadmap = club.roadmap
-            week = roadmap.weeks.get(degree=week_number)
+            week = RoadmapWeek.objects.get(id=week_id)
             UserRoadmapWeek.objects.create(
                 user_id=user, week_id=week, is_in_progress=True
             )
@@ -161,20 +141,42 @@ class StudentProgressWeekView(generics.GenericAPIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, week_id, *args, **kwargs):
         try:
             user = request.user
-            club_id = request.query_params["club_id"]
-            week_number = request.query_params["week_number"]
-            club = user.clubs.get(id=club_id)
-            roadmap = club.roadmap
-            week = roadmap.weeks.get(degree=week_number)
+            week = RoadmapWeek.objects.get(id=week_id)
             UserRoadmapWeek.objects.filter(
                 user_id=user, week_id=week, is_in_progress=True
             ).delete()
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def student_roadmap_view(request, club_id, *args, **kwargs):
+    try:
+        res = []
+        user = request.user
+        roadmap = Roadmap.objects.get(club__id=club_id)
+        weeks = roadmap.weeks.all()
+        for week in weeks:
+            week_object = {
+                "id": week.id,
+                "title": week.title,
+                "description": week.description,
+                "degree": week.degree,
+                "is_completed": UserRoadmapWeek.objects.filter(
+                    user_id=user.id, week_id=week, is_completed=True
+                ).exists(),
+                "is_in_progress": UserRoadmapWeek.objects.filter(
+                    user_id=user.id, week_id=week, is_in_progress=True
+                ).exists(),
+            }
+            res.append(week_object)
+        return Response(res, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StudentFriendsView(generics.GenericAPIView):

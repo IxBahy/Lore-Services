@@ -88,8 +88,14 @@ class ClubsView(mixins.CreateModelMixin, generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         self.permission_classes = [IsAuthenticated]
         self.serializer_class = PostClubSerializer
-        res = self.create(request, *args, **kwargs)
-        return res
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        club = Club.objects.get(id=serializer.data["id"]).owner = request.user
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def put(self, request, **kwargs):
         self.serializer_class = FileUploadSerializer
@@ -220,3 +226,34 @@ class ReviewsView(
 
     def post(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+
+class ClubDocumentView(generics.GenericAPIView):
+    """View to retrieve club document"""
+
+    serializer_class = ClubDocumentSerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            club_id = self.kwargs.get("id")
+            self.queryset = Article.objects.get(club_id=club_id)
+            serializer = self.get_serializer(self.queryset, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClubOwnerDetails(generics.GenericAPIView):
+    serializer_class = MembersSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            club_id = self.kwargs.get("id")
+            club = Club.objects.get(id=club_id)
+            owner = club.owner
+            self.queryset = owner
+            serializer = self.get_serializer(self.queryset, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

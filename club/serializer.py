@@ -117,3 +117,9 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = "__all__"
+
+
+class ClubDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        exclude = ["document", "club_id"]

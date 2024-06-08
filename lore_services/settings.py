@@ -94,11 +94,11 @@ WSGI_APPLICATION = "lore_services.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "lore",
-        "USER": "lore",
-        "PASSWORD": "password",
-        "HOST": "127.0.0.1",
-        "PORT": "5439",
+        "NAME": "lore-database",
+        "USER": "hdhikykhey",
+        "PASSWORD": "$b8Bm6aSBdHOfGHd",
+        "HOST": "10.0.2.4",
+        "PORT": "5432",
     }
 }
 
